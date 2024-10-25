@@ -34,11 +34,11 @@ You have uMessagesBrokerLib class with following static methods:
 
  - **uMessagesBrokerLib::set(const char index, const void (*)(const char*) fn);** : Sets the function handler for a message index.
  - **uMessagesBrokerLib::remove(const char index);** : Removes the function handler for a message index.
- - ** *uMessagesBrokerLib::setDefault(const void (*)(const char*) fn);** : Sets the function handler any message which index has no handler defined
- - ** *uMessagesBrokerLib::removeDefault();** : Removes the function handler any message which index has no handler defined
- - ** *uMessagesBrokerLib::encode(const char index, const char message[], char output[]);** : Given a plain message, encodes it in base64 prepending the index and a '-' as header
- - ** *char uMessagesBrokerLib::decode(const char message[], char output[]);** : Decodes a message previously encoded
- - ** *uMessagesBrokerLib::process(const char buffer[]);** : Given a encoded message, decodes it and calls its pertinent handler or default handler if defined and no other handler matches or message has not the correct header.
+ - ***uMessagesBrokerLib::setDefault(const void (*)(const char*) fn);** : Sets the function handler any message which index has no handler defined
+ - ***uMessagesBrokerLib::removeDefault();** : Removes the function handler any message which index has no handler defined
+ - ***uMessagesBrokerLib::encode(const char index, const char message[], char output[]);** : Given a plain message, encodes it in base64 prepending the index and a '-' as header
+ - ***char uMessagesBrokerLib::decode(const char message[], char output[]);** : Decodes a message previously encoded
+ - ***uMessagesBrokerLib::process(const char buffer[]);** : Given a encoded message, decodes it and calls its pertinent handler or default handler if defined and no other handler matches or message has not the correct header.
 
 
 
