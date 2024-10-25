@@ -1,4 +1,4 @@
-# Arduino (and standard C) tiny and cross-device compatible hexadecimal coding/decoding library.
+#  Arduino (and standard C) tiny and cross-device compatible messaging system library.
 
 ## What is this repository for?
 
