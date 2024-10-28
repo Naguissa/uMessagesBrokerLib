@@ -49,7 +49,7 @@ You can get it from Arduino libraries directly, searching by uMessagesBrokerLib.
 For manual installation:
 
  * Get the ZIP from releases link: https://github.com/Naguissa/uMessagesBrokerLib/releases
- * Rename to uHexLib.zip
+ * Rename to uMessagesBrokerLib.zip
  * Install library on Arduino
 
 ## Example
