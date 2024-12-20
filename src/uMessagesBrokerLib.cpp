@@ -16,7 +16,7 @@
  *	* *uMessagesBrokerLib::remove(const char index);* : Removes the function handler for a message index.
  *	* *uMessagesBrokerLib::setDefault(const void (*)(const char*) fn);* : Sets the function handler any message which index has no handler defined
  *	* *uMessagesBrokerLib::removeDefault();* : Removes the function handler any message which index has no handler defined
- *	* *uMessagesBrokerLib::encode(const char index, const char message[], char output[]);* : Given a plain message, encodes it in base64 prepending the index and a '-' as header
+ *	* *uMessagesBrokerLib::encode(const char index, const char message[], char output[], uint16_t messageLength = 0);* : Given a plain message, encodes it in base64 prepending the index and a '-' as header. Optionally you can specify the input message length.
  *	* *char uMessagesBrokerLib::decode(const char message[], char output[]);* : Decodes a message previously encoded
  *	* *uMessagesBrokerLib::process(const char buffer[]);* : Given a encoded message, decodes it and calls its pertinent handler or default handler if defined and no other handler matches or message has not the correct header.
  *
@@ -27,7 +27,7 @@
  * @author Naguissa
  * @see <a href="https://github.com/Naguissa/uMessagesBrokerLib">https://github.com/Naguissa/uMessagesBrokerLib</a>
  * @see <a href="mailto:naguissa@foroelectro.net">naguissa@foroelectro.net</a>
- * @version 1.0.0
+ * @version 1.1.0
  */
  #ifndef _uMessagesBrokerLib_cpp_
     #define _uMessagesBrokerLib_cpp_
@@ -91,10 +91,10 @@
         fallback = 0;
     }
 
-    void uMessagesBrokerLib::encode(const char index, const char message[], char output[]) {
+    void uMessagesBrokerLib::encode(const char index, const char message[], char output[], uint16_t messageLength) {
         output[0] = index;
         output[1] = '-';
-        uHexLib::encode(message, &output[2]);
+        uHexLib::encode(message, &output[2], messageLength);
     }
 
 
