@@ -27,7 +27,7 @@
  * @author Naguissa
  * @see <a href="https://github.com/Naguissa/uMessagesBrokerLib">https://github.com/Naguissa/uMessagesBrokerLib</a>
  * @see <a href="mailto:naguissa@foroelectro.net">naguissa@foroelectro.net</a>
- * @version 1.1.0
+ * @version 1.2.0
  */
 
  #ifndef _uMessagesBrokerLib_h_
@@ -36,28 +36,27 @@
     #include <Arduino.h>
     #include "uHexLib.h"
 
-    typedef void (*uMessagesBrokerLibFunction) (const char*);    
     struct uMessagesBrokerLibList {
-        uMessagesBrokerLibList() : next(0){};
-        uMessagesBrokerLibFunction fn;
+        uMessagesBrokerLibList() : fn(NULL), index(0), next(NULL) {};
+        void (*fn) (const char*);
         char index;
         uMessagesBrokerLibList *next;
     };
 
     class uMessagesBrokerLib {
         public:
-            static void set(const char, const uMessagesBrokerLibFunction);
+            static void set(const char, void (*) (const char*));
             static bool remove(const char);
-            static void setDefault(const uMessagesBrokerLibFunction);
+            static void setDefault(void (*) (const char*));
             static void removeDefault();
             static void encode(const char, const char [], char [], uint16_t = 0);
-            static char decode(const char [], char []);
-            static void process(const char []);
+            static char decode(const char [], char [], uint16_t = 0);
+            static void process(const char [], uint16_t = 0);
         private:
             // Purely static methods
             uMessagesBrokerLib();
             static uMessagesBrokerLibList *list;
-            static uMessagesBrokerLibFunction fallback;
+            static void (*fallback) (const char*);
     };
 
 #endif

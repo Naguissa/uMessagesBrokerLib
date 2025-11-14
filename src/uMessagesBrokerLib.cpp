@@ -27,7 +27,7 @@
  * @author Naguissa
  * @see <a href="https://github.com/Naguissa/uMessagesBrokerLib">https://github.com/Naguissa/uMessagesBrokerLib</a>
  * @see <a href="mailto:naguissa@foroelectro.net">naguissa@foroelectro.net</a>
- * @version 1.1.0
+ * @version 1.2.0
  */
  #ifndef _uMessagesBrokerLib_cpp_
     #define _uMessagesBrokerLib_cpp_
@@ -35,45 +35,51 @@
     #include "uMessagesBrokerLib.h"
     #include "uHexLib.h"
 
-    uMessagesBrokerLibList * uMessagesBrokerLib::list = 0;
-    uMessagesBrokerLibFunction uMessagesBrokerLib::fallback = 0;
+    uMessagesBrokerLibList * uMessagesBrokerLib::list = NULL;
+    void (*uMessagesBrokerLib::fallback) (const char*) = NULL;
 
     uMessagesBrokerLib::uMessagesBrokerLib() {}
 
-    void uMessagesBrokerLib::set(const char index, const uMessagesBrokerLibFunction fn) {
-        if (list == 0) {
+    void uMessagesBrokerLib::set(const char index, void (*fn) (const char*)) {
+        if (list == NULL) {
             list = new uMessagesBrokerLibList;
             list->index = index;
             list->fn = fn;
-            list->next = 0;
+            list->next = NULL;
             return;
         }
-        
         uMessagesBrokerLibList * prev = list;
-        for (uMessagesBrokerLibList * slot = list; slot != 0; slot = slot->next) {
+        for (uMessagesBrokerLibList * slot = list; slot != NULL; slot = slot->next) {
             if (slot->index == index) {
                 slot->fn = fn;
                 return;
             }
             prev = slot;
         }
-        
+
         prev->next = new uMessagesBrokerLibList;
         prev->next->index = index;
         prev->next->fn = fn;
-        prev->next->next = 0;
+        prev->next->next = NULL;
     }
 
     bool uMessagesBrokerLib::remove(const char index) {
         uMessagesBrokerLibList *slot, *prev;
-        for (slot = list, prev = 0; slot != 0; slot = slot->next) {
+        for (slot = list, prev = NULL; slot != NULL; slot = slot->next) {
             if (slot->index == index) {
-                if (prev == 0 && slot->next == 0) { // Only element of the list
-                    list = 0;
+                if (prev == NULL) { // 1st element of the list
+                    if (slot->next == NULL) { // Only element of the list
+                        free(list);
+                        list = NULL;
+                        return true;
+                    } 
+                    // Not only element
+                    list = list->next;
+                    free(slot);
+                    return true;
                 }
-                if (prev != 0) {
-                    prev->next = slot->next;
-                }
+                // Middle of the list
+                prev->next = slot->next;
                 free(slot);
                 return true;
             }
@@ -83,12 +89,12 @@
     }
 
 
-    void uMessagesBrokerLib::setDefault(const uMessagesBrokerLibFunction fn) {
+    void uMessagesBrokerLib::setDefault(void (*fn) (const char*)) {
         fallback = fn;
     }
     
     void uMessagesBrokerLib::removeDefault() {
-        fallback = 0;
+        fallback = NULL;
     }
 
     void uMessagesBrokerLib::encode(const char index, const char message[], char output[], uint16_t messageLength) {
@@ -98,37 +104,42 @@
     }
 
 
-    char uMessagesBrokerLib::decode(const char message[], char output[]) {
-        uint16_t size = strlen(message);
+    char uMessagesBrokerLib::decode(const char message[], char output[], uint16_t size) {
+        if (size == 0) {
+            size = strlen(message) / 2 - 1;
+        }
+        
         if (size < 2 || message[1] != '-') {
             return 0;
         }
         if (size > 2) {
-            uHexLib::decode(&message[2], output);
+            uHexLib::decode(&message[2], output, size);
         }
         return message[0];
     }
 
 
-    void uMessagesBrokerLib::process(const char buffer[]) {
-        uint16_t size = strlen(buffer);
-        if (size > 2 && list != 0) {
-            for (uMessagesBrokerLibList *slot = list; slot != 0; slot = slot->next) {
+    void uMessagesBrokerLib::process(const char buffer[], uint16_t size) {
+        if (size == 0) {
+            size = strlen(buffer) / 2 - 1;
+        }
+        if (size > 2 &&  buffer[1] == '-' && list != 0) {
+            for (uMessagesBrokerLibList *slot = list; slot != NULL; slot = slot->next) {
                 if (slot->index == buffer[0]) {
-                    char decoded[size * 2 - 4];
-                    uHexLib::decode(&buffer[2], decoded);            
+                    char decoded[size + 1];
+                    uMessagesBrokerLib::decode(buffer, decoded, size);
                     slot->fn(decoded);
                     return;
                 }
             }
-            if (fallback != 0) {
-                char decoded[size * 2 - 4];
-                uHexLib::decode(&buffer[2], decoded);            
+            if (fallback != NULL) {
+                char decoded[size + 1];
+                uMessagesBrokerLib::decode(buffer, decoded, size);
                 fallback(decoded);
                 return;
             }
         }
-        if (fallback != 0) {
+        if (fallback != NULL) {
             fallback(buffer);
         }
     }

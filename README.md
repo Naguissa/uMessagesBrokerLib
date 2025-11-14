@@ -1,5 +1,7 @@
 #  Arduino (and standard C) tiny and cross-device compatible messaging system library.
 
+Master status:  ![Arduino CI](https://github.com/Naguissa/uMessagesBrokerLib/workflows/arduino_ci/badge.svg)
+
 ## What is this repository for?
 
 Arduino (and standard C) tiny and cross-device compatible messaging system library.
@@ -36,9 +38,9 @@ You have uMessagesBrokerLib class with following static methods:
  - **uMessagesBrokerLib::remove(const char index);** : Removes the function handler for a message index.
  - ***uMessagesBrokerLib::setDefault(const void (*)(const char*) fn);** : Sets the function handler any message which index has no handler defined
  - ***uMessagesBrokerLib::removeDefault();** : Removes the function handler any message which index has no handler defined
- - ***uMessagesBrokerLib::encode(const char index, const char message[], char output[]);** : Given a plain message, encodes it in base64 prepending the index and a '-' as header
- - ***char uMessagesBrokerLib::decode(const char message[], char output[]);** : Decodes a message previously encoded
- - ***uMessagesBrokerLib::process(const char buffer[]);** : Given a encoded message, decodes it and calls its pertinent handler or default handler if defined and no other handler matches or message has not the correct header.
+ - ***uMessagesBrokerLib::encode(const char index, const char message[], char output[]<, optional uint16_t length>);** : Given a plain message, encodes it in base64 prepending the index and a '-' as header
+ - ***char uMessagesBrokerLib::decode(const char message[], char output[]<, optional uint16_t original_length>);** : Decodes a message previously encoded
+ - ***uMessagesBrokerLib::process(const char buffer[]<, optional uint16_t original_length>);** : Given a encoded message, decodes it and calls its pertinent handler or default handler if defined and no other handler matches or message has not the correct header.
 
 
 
@@ -51,6 +53,7 @@ For manual installation:
  * Get the ZIP from releases link: https://github.com/Naguissa/uMessagesBrokerLib/releases
  * Rename to uMessagesBrokerLib.zip
  * Install library on Arduino
+
 
 ## Example
 
